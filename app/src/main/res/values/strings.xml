@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">NeuroMusic</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_musicovery">Musicovery</string>
+    <string name="facebook_app_id">1083783578351917</string>
+    <string name="title_activity_login">LoginActivity</string>
+</resources>
