@@ -4,4 +4,9 @@
     <string name="title_activity_musicovery">Musicovery</string>
     <string name="facebook_app_id">1083783578351917</string>
     <string name="title_activity_login">LoginActivity</string>
+
+    <string name="fb_login_protocol_scheme">fb1083783578351917</string>
+    <string name="openDrawer">Open Drawer</string>
+    <string name="closeDrawer">Close Drawer</string>
+
 </resources>

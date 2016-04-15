@@ -1,8 +1,14 @@
 package ark.neuromusic;
 
 import android.content.Intent;
+
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+
 import android.util.Log;
 
 import com.facebook.CallbackManager;
@@ -17,30 +23,40 @@ import com.facebook.login.widget.LoginButton;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class LoginActivity extends AppCompatActivity {
     LoginButton loginButton;
     CallbackManager callbackManager;
+    public static final String FB_NAME = "ark.neuromusic.fb_name";
+    public static final String FB_DP = "ark.neuromusic.fb_dp";
+    public static final String FB_COVER = "ark.neuromusic.fb_cover";
+    public static final String FB_EMAIL = "ark.neuromusic.fb_email";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
-//        try {
-//            PackageInfo info = getPackageManager().getPackageInfo(
-//                    "ark.neuromusic",
-//                    PackageManager.GET_SIGNATURES);
-//            for (Signature signature : info.signatures) {
-//                MessageDigest md = MessageDigest.getInstance("SHA");
-//                md.update(signature.toByteArray());
-//                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
-//            }
-//        } catch (PackageManager.NameNotFoundException e) {
-//
-//        } catch (NoSuchAlgorithmException e) {
-//
-//        }
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "ark.neuromusic",
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("KeyHash:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
         callbackManager = CallbackManager.Factory.create();
 
 
@@ -67,6 +83,16 @@ public class LoginActivity extends AppCompatActivity {
                                 // Application code
                                 try {
                                     String name = object.getString("name");
+                                    String email = object.getString("email");
+                                    String dp_url = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                                    String coverpic_url = object.getJSONObject("cover").getString("source");
+                                    Intent intent = new Intent(getApplicationContext(),MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    intent.putExtra(FB_NAME, name);
+                                    intent.putExtra(FB_DP,dp_url);
+                                    intent.putExtra(FB_COVER,coverpic_url);
+                                    intent.putExtra(FB_EMAIL,email);
+                                    startActivity(intent);
                                     // 01/31/1980 format
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -75,11 +101,9 @@ public class LoginActivity extends AppCompatActivity {
                             }
                         });
                 Bundle parameters = new Bundle();
-                parameters.putString("fields", "id,name,music");
+                parameters.putString("fields", "id,name,email,music,picture,cover");
                 request.setParameters(parameters);
                 request.executeAsync();
-//                Intent intent = new Intent(getApplicationContext(),MainActivity.class);
-//                startActivity(intent);
             }
 
             @Override
